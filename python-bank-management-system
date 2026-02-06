@@ -1,0 +1,139 @@
+import os
+
+FILENAME = "accounts.txt"
+
+def create_account():
+    acc_no = input("Enter Account Number: ")
+    name = input("Enter Account Holder Name: ")
+    balance = float(input("Enter Initial Deposit: "))
+
+    with open(FILENAME, "a") as file:
+        file.write(f"{acc_no},{name},{balance}\n")
+
+    print(" Account created successfully!\n")
+
+
+def display_accounts():
+    if not os.path.exists(FILENAME):
+        print("No accounts found!\n")
+        return
+
+    print("\n--- All Bank Accounts ---")
+    with open(FILENAME, "r") as file:
+        for line in file:
+            acc_no, name, balance = line.strip().split(",")
+            print(f"Account No: {acc_no}, Name: {name}, Balance: ₹{balance}")
+    print()
+
+
+def deposit():
+    acc_no = input("Enter Account Number: ")
+    amount = float(input("Enter Deposit Amount: "))
+
+    if not os.path.exists(FILENAME):
+        print("No accounts found!\n")
+        return
+
+    updated = False
+    lines = []
+
+    with open(FILENAME, "r") as file:
+        lines = file.readlines()
+
+    with open(FILENAME, "w") as file:
+        for line in lines:
+            data = line.strip().split(",")
+            if data[0] == acc_no:
+                data[2] = str(float(data[2]) + amount)
+                updated = True
+                print(" Amount Deposited Successfully!")
+            file.write(",".join(data) + "\n")
+
+    if not updated:
+        print(" Account not found!\n")
+
+
+def withdraw():
+    acc_no = input("Enter Account Number: ")
+    amount = float(input("Enter Withdrawal Amount: "))
+
+    if not os.path.exists(FILENAME):
+        print("No accounts found!\n")
+        return
+
+    updated = False
+    lines = []
+
+    with open(FILENAME, "r") as file:
+        lines = file.readlines()
+
+    with open(FILENAME, "w") as file:
+        for line in lines:
+            data = line.strip().split(",")
+            if data[0] == acc_no:
+                balance = float(data[2])
+                if balance >= amount:
+                    data[2] = str(balance - amount)
+                    updated = True
+                    print(" Withdrawal Successful!")
+                else:
+                    print(" Insufficient Balance!")
+                file.write(",".join(data) + "\n")
+            else:
+                file.write(line)
+
+    if not updated:
+        print(" Account not found!\n")
+
+
+def search_account():
+    acc_no = input("Enter Account Number: ")
+
+    if not os.path.exists(FILENAME):
+        print("No accounts found!\n")
+        return
+
+    with open(FILENAME, "r") as file:
+        for line in file:
+            data = line.strip().split(",")
+            if data[0] == acc_no:
+                print("\n--- Account Details ---")
+                print(f"Account No: {data[0]}")
+                print(f"Name: {data[1]}")
+                print(f"Balance: ₹{data[2]}\n")
+                return
+
+    print(" Account not found!\n")
+
+
+def menu():
+    while True:
+        print("===== Bank Management System =====")
+        print("1. Create Account")
+        print("2. Display All Accounts")
+        print("3. Deposit Money")
+        print("4. Withdraw Money")
+        print("5. Search Account")
+        print("6. Exit")
+
+        choice = input("Enter your choice: ")
+
+        if choice == '1':
+            create_account()
+        elif choice == '2':
+            display_accounts()
+        elif choice == '3':
+            deposit()
+        elif choice == '4':
+            withdraw()
+        elif choice == '5':
+            search_account()
+        elif choice == '6':
+            print("Thank you for using Bank Management System!")
+            break
+        else:
+            print(" Invalid choice! Try again.\n")
+
+
+if __name__ == "__main__":
+    menu()
